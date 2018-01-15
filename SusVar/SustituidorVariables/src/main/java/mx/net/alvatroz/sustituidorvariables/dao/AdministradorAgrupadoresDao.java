@@ -6,6 +6,7 @@
 package mx.net.alvatroz.sustituidorvariables.dao;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -17,13 +18,16 @@ import java.util.Set;
 import mx.net.alvatroz.sustituidorvariables.bo.AgrupadorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.TipoFormateador;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -38,6 +42,10 @@ public class AdministradorAgrupadoresDao {
 
    private final static Logger LOG = LoggerFactory.getLogger(AdministradorAgrupadoresDao.class);
 
+   
+   @Autowired
+   private ResourceLoader resourceLoader;
+   
    @Autowired
    private JdbcTemplate template;
 
@@ -95,6 +103,40 @@ public class AdministradorAgrupadoresDao {
       });
    }
 
+   public void inicializaBD()
+   {
+      Resource recurso = resourceLoader.getResource("classpath:inicializa.sql");
+      LOG.debug("El archivo existe : {}", recurso.exists());
+      try{
+	String ejecucion = IOUtils.toString(recurso.getURL(), Charset.defaultCharset()); 
+	template.execute( ejecucion);
+      }catch( IOException e)
+      {
+	 LOG.error("Fallo la inicialización ",e);
+      }
+      
+      //this.template.execute("RUNSCRIPT FROM 'inicializa.sql'");
+   }
+   
+   public boolean estaInicializadaLaBd()
+   {
+      try{
+	int total = template.queryForObject(" SELECT COUNT(*) FROM TATIPOFORMATEADOR", Integer.class); 
+	return total > 0;
+      }catch( DataAccessException e)
+      {
+	 return false;
+      }
+      
+      
+   }
+   
+   /**
+    * Lee todos los datos de la base de datos.
+    * @return El agrupador nuevo que se ha generado
+    * @throws IOException
+    * @throws ClassNotFoundException 
+    */
    public Set<AgrupadorBo> lee() throws IOException, ClassNotFoundException {
 
       Map<Integer, AgrupadorBo> agrupadores = new HashMap<>();

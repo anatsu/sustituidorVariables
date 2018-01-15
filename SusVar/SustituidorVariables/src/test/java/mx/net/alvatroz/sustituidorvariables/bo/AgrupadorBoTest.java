@@ -142,4 +142,9 @@ public class AgrupadorBoTest {
         }
         LOG.debug("Fin de la escritura");
     }
+    
+    public void testInicializa()
+    {
+       
+    }
 }

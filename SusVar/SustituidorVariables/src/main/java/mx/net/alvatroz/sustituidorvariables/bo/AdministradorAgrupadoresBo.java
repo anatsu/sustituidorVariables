@@ -47,7 +47,14 @@ public class AdministradorAgrupadoresBo {
     {
         try
         {
-            agrupadores = dao.lee();
+	   if( dao.estaInicializadaLaBd())
+	   {
+	    agrupadores = dao.lee();  
+	   }else
+	   {
+	      dao.inicializaBD();
+	   }
+            
         }catch(FileNotFoundException e)
         {
             LOG.error("Aun no existe el archivo de agrupadores por lo que se generará uno. "
