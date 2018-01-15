@@ -8,7 +8,6 @@ package mx.net.alvatroz.sustituidorvariables.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.util.Collections;
@@ -66,7 +65,7 @@ public class FrameContenedor extends JFrame
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(getPanelNorte(), BorderLayout.NORTH);
         getContentPane().add(getPanelCentral(), BorderLayout.CENTER);
-        getContentPane().add(getPanelConfigurador(), BorderLayout.SOUTH);
+        //getContentPane().add(getPanelConfigurador(), BorderLayout.SOUTH);
     }
     
     public JPanel getPanelNorte()
@@ -86,6 +85,7 @@ public class FrameContenedor extends JFrame
         JPanel panelSuperior = new JPanel( new GridLayout(1, 2));
         panelSuperior.add( new JScrollPane(txtAreaTextoATraducir));
         panelSuperior.add( new JScrollPane(txtTextoTraducido));
+	panelSuperior.add( getPanelConfigurador());
         
         
         return panelSuperior;
