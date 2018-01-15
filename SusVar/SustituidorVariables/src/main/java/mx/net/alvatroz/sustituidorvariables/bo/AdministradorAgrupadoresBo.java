@@ -47,11 +47,14 @@ public class AdministradorAgrupadoresBo {
     {
         try
         {
+	   LOG.debug("Inicializando");
 	   if( dao.estaInicializadaLaBd())
 	   {
+	      LOG.debug("La base de datos esta inicializada leyendo los datos de la misma");
 	    agrupadores = dao.lee();  
 	   }else
 	   {
+	      LOG.debug("Inicializando la bd");
 	      dao.inicializaBD();
 	   }
             

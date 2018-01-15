@@ -79,7 +79,17 @@ public class AdministradorAgrupadoresDao {
 	 return agrupador;
       }).forEachOrdered((agrupador) -> {
 	 LOG.debug("Registrando detalles del agrupador los elementos son: {}", agrupador.getElementos());
-	 agrupador.getElementos().forEach((elemento) -> {
+	 agrupador
+	    .getElementos()
+	    .stream()
+	    .filter( 
+	       elemento -> 
+		  elemento.getConstante() != null 
+		     && !elemento.getConstante().trim().isEmpty()
+		     && elemento.getValor() != null
+	             && !elemento.getValor().trim().isEmpty()
+	             && elemento.getTipo() != null
+	    ).forEach((elemento) -> {
 	    
 	    LOG.debug("Actualizando el elemento {}", elemento);
 	    int filasActualizadas = template.update("update TAELEMENTOTRADUCTOR  \n"
@@ -115,7 +125,7 @@ public class AdministradorAgrupadoresDao {
 	 LOG.error("Fallo la inicialización ",e);
       }
       
-      //this.template.execute("RUNSCRIPT FROM 'inicializa.sql'");
+      
    }
    
    public boolean estaInicializadaLaBd()
