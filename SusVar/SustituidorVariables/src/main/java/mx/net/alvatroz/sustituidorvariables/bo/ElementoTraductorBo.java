@@ -17,14 +17,33 @@ public class ElementoTraductorBo implements Serializable, Comparable<ElementoTra
      * Identificador. No funciona en entornos concurrentes
      */
     private final Long id;
+    /**
+     * Cadena que representa el valor constante: csgAlgo
+     */
     private String constante;
+    /**
+     * Tipo del traductor
+     */
     private TipoFormateador tipo;
+    /**
+     * Valor por el que se sustituira la constante
+     */
     private String valor;
 
     public ElementoTraductorBo() {
         id = System.currentTimeMillis();
     }
 
+   public ElementoTraductorBo(Long id) {
+      this.id = id;
+   }
+    
+    
+
+    /**
+     * Identificador del elemento traductor
+     * @return 
+     */
     public Long getId() {
         return id;
     }

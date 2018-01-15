@@ -101,7 +101,7 @@ public class AgrupadorBoTest {
         ElementoTraductorBo elementoAgregadoFecha = agrupador.agregaElemento();
         elementoAgregadoFecha.setTipo(TipoFormateador.FECHA);
         elementoAgregadoFecha.setConstante("csgFecha ");
-        elementoAgregadoFecha.setValor( "2016-01-06");
+        elementoAgregadoFecha.setValor( "2016-01-06");	
         Assert.assertEquals(" SELECT * FROM DUAL WHERE X = 'hola' and fecha = TO_DATE( '2016-01-06', 'dd-MM-YYYY') "
                 , administradorAgrupadores.traduce(agrupador, " SELECT * FROM DUAL WHERE X = csgNada and fecha = csgFecha "));
         

@@ -67,7 +67,7 @@ public class AdministradorAgrupadoresBo {
             dao.escribe(agrupadores);
         }catch( Exception e )
         {
-            LOG.error("Ocurrio un error al guardar los agrupadores");
+            LOG.error("Ocurrio un error al guardar los agrupadores", e);
             throw new LectorFinalizacionException("No fue posible almacenar los datos", e);
         }
     }
@@ -79,7 +79,7 @@ public class AdministradorAgrupadoresBo {
      */
     public void agregaAgrupador( String nombreAgrupador)
     {
-        AgrupadorBo agrupador = new AgrupadorBo(nombreAgrupador);
+        AgrupadorBo agrupador = new AgrupadorBo(nombreAgrupador, null);
         if( agrupadores.contains(agrupador))
         {
             throw new AgrupadorYaExisteException(nombreAgrupador);
