@@ -18,6 +18,7 @@ import mx.net.alvatroz.sustituidorvariables.bo.AdministradorAgrupadoresBo;
 import mx.net.alvatroz.sustituidorvariables.bo.AgrupadorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorYaExisteException;
+import mx.net.alvatroz.sustituidorvariables.bo.exception.FormateadorInexistenteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +50,20 @@ public class FrameView extends FrameContenedor{
             }            
         });
         
-        botonTraducir.addActionListener( (e)->{
+        botonTraducir.addActionListener( (evt)->{
             
             LOG.debug( "Elemento elegido {} " , comboAgrupadores.getSelectedItem());
             if( comboAgrupadores.getSelectedItem() != null )
             {
+	       try{
                 AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem()+"");
                 String textoTraducido = administradorAgrupadoresBo.traduce( agrupador, txtAreaTextoATraducir.getText());
                 txtTextoTraducido.setText(textoTraducido);
+	       }catch( FormateadorInexistenteException e)
+	       {
+		  LOG.error("Ocurrio un error al pintar un elemento {}", e);
+		  JOptionPane.showMessageDialog(this, e.getMessage());
+	       }
             }
             
         });

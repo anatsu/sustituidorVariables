@@ -25,6 +25,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import mx.net.alvatroz.sustituidorvariables.bo.AgrupadorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +41,12 @@ public class FrameContenedor extends JFrame
     private final static Logger LOG = LoggerFactory.getLogger(FrameContenedor.class);
     protected final JButton botonTraducir = new JButton(RESOURCE_BUNDLE.getString("btnTraducir.nombre"));
     protected final JButton botonAgregarElemento = new JButton(RESOURCE_BUNDLE.getString("btnElementoTraductor.nombre"));
-    protected final JTextArea txtAreaTextoATraducir = new  JTextArea();
-    protected final JTextArea txtTextoTraducido = new JTextArea("");
+    protected final JTextArea txtAreaTextoATraducir = getTextAreaInicial();
+    protected final JTextArea txtTextoTraducido = getTextAreaInicial("");
     
     
     protected final JComboBox<String> comboAgrupadores = new JComboBox<>();
-    protected final JButton botonAgregarAgrupador = new JButton(RESOURCE_BUNDLE.getString("btnAgregarAgrupador.nombre"));
-    //protected final ConstantesTableModel tableModel = new ConstantesTableModel(Collections.EMPTY_LIST);
+    protected final JButton botonAgregarAgrupador = new JButton(RESOURCE_BUNDLE.getString("btnAgregarAgrupador.nombre"));    
     protected final JTable tablaElementosTraductor = new JTable( new ConstantesTableModel(Collections.EMPTY_LIST)  );
     protected final JMenuItem jItemAgregar = new JMenuItem(RESOURCE_BUNDLE.getString("jItem.agregar"));
     protected final JMenuItem jItemEliminar = new JMenuItem(RESOURCE_BUNDLE.getString("jItem.eliminar"));
@@ -59,6 +60,26 @@ public class FrameContenedor extends JFrame
         super(RESOURCE_BUNDLE.getString("tituloPantalla"));
     }
     
+    /**
+     * Recupera un text área con resaltado de colores
+     * @param textoInicial Texto que llevará inicialmente el text area
+     * @return Un JTextArea configurado
+     */
+    private JTextArea getTextAreaInicial(String textoInicial)
+    {
+      RSyntaxTextArea textArea = new RSyntaxTextArea(20, 60);
+      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
+      textArea.setCodeFoldingEnabled(true);
+      if( textoInicial != null )
+      {
+	 textArea.setText(textoInicial);
+      }
+      return textArea;
+    }
+    private JTextArea getTextAreaInicial()
+    {
+       return getTextAreaInicial(null);
+    }
     
     public void inicializaPosiciones()
     {        
