@@ -5,6 +5,7 @@
  */
 package mx.net.alvatroz.sustituidorvariables.bo;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 import javax.annotation.Resource;
@@ -13,6 +14,7 @@ import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorSinNombreExcep
 import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorYaExisteException;
 import mx.net.alvatroz.sustituidorvariables.dao.AdministradorAgrupadoresDao;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -35,6 +37,15 @@ public class AgrupadorBoTest {
     
     @Resource
     private AdministradorAgrupadoresDao dao;
+    
+    @Before
+    public void init()
+    {
+       File archivo = new File("sustituidor.mv.db");
+       boolean borrandoInicial = archivo.delete();
+       LOG.info("Se borro el archivo de base de datos para la prueba {} "
+	  + " el archivo existe {} ruta {}", borrandoInicial, archivo.exists(), archivo.getAbsolutePath());
+    }
 
     @Test
     public void testVerfificaNombreVacio() {

@@ -6,12 +6,14 @@
 package mx.net.alvatroz.sustituidorvariables;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  *
  * @author alvaro
  */
 @SpringBootApplication
+@PropertySource( "classpath:querys.xml")
 public class ApplicationTest {
    
 }

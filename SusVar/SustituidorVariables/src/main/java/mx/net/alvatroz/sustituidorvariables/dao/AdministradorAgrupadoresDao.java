@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataAccessException;
@@ -42,6 +43,24 @@ public class AdministradorAgrupadoresDao {
 
    private final static Logger LOG = LoggerFactory.getLogger(AdministradorAgrupadoresDao.class);
 
+   @Value("${totalFormateadores}")
+   private String queryTotalFormateadores;
+   
+   @Value("${TAAGRUPADOR.insert}")
+   private String taAgrupadorInsert;
+   
+   @Value("${TAAGRUPADOR.update}")
+   private String taAgrupadorUpdate;
+   
+   @Value("${TAELEMENTOTRADUCTOR.update}")
+   private String taElementoTraductorUpdate;
+   
+   @Value("${TAELEMENTOTRADUCTOR.insert}")
+   private String taElementoTraductorInsert;
+   
+   
+   @Value("${selectDatosIniciales}")
+   private String selectDatosIniciales;
    
    @Autowired
    private ResourceLoader resourceLoader;
@@ -54,11 +73,11 @@ public class AdministradorAgrupadoresDao {
       coleccion.stream().map((agrupador) -> {
 	 if (agrupador.getFiid() == null) {
 	    LOG.debug("No se habia registrado el agrupador {}", agrupador.getNombreAgrupador());
-	    final String INSERT_AGRUPADOR = "INSERT INTO TAAGRUPADOR ( FCNOMBREAGRUPADOR ) VALUES ( ? )";
+	    
 	    PreparedStatementCreator psc = new PreparedStatementCreator() {
 	       @Override
 	       public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-		  PreparedStatement ps = con.prepareStatement(INSERT_AGRUPADOR,
+		  PreparedStatement ps = con.prepareStatement( taAgrupadorInsert,
 		     new String[]{"FIID"});
 
 		  ps.setString(1, agrupador.getNombreAgrupador());
@@ -74,7 +93,7 @@ public class AdministradorAgrupadoresDao {
 
 	 } else {
 	    LOG.debug("Se actualiza un nuevo agrupador");
-	    template.update("UPDATE TAAGRUPADOR SET FCNOMBREAGRUPADOR = ? WHERE FIID = ?", agrupador.getNombreAgrupador(), agrupador.getFiid());
+	    template.update(taAgrupadorUpdate, agrupador.getNombreAgrupador(), agrupador.getFiid());
 	 }
 	 return agrupador;
       }).forEachOrdered((agrupador) -> {
@@ -92,18 +111,12 @@ public class AdministradorAgrupadoresDao {
 	    ).forEach((elemento) -> {
 	    
 	    LOG.debug("Actualizando el elemento {}", elemento);
-	    int filasActualizadas = template.update("update TAELEMENTOTRADUCTOR  \n"
-		  + "   set FCCONSTANTE = ?\n"
-		  + "     , FITIPOAGRUPADOR = ?\n"
-		  + "     , FCVALOR = ?\n"
-		  + " where FIID = ?", elemento.getConstante(), elemento.getTipo().getId(), elemento.getValor(), elemento.getId());
+	    int filasActualizadas = template.update(taElementoTraductorUpdate, elemento.getConstante(), elemento.getTipo().getId(), elemento.getValor(), elemento.getId());
 	    
 	    if ( filasActualizadas == 0) {
-	    
-	       final String INSERT_AGRUPADOR = "INSERT INTO TAELEMENTOTRADUCTOR (FIID, FIIDTRADUCTOR,FCCONSTANTE,FITIPOAGRUPADOR,FCVALOR) "
-		  + "VALUES ( ?,?,?,?,?);";
+	    	       
 
-	       int filasInsertadas = template.update(INSERT_AGRUPADOR
+	       int filasInsertadas = template.update(taElementoTraductorInsert
 		  , elemento.getId(), agrupador.getFiid(), elemento.getConstante(), elemento.getTipo().getId(), elemento.getValor());
 	       LOG.debug("Filas insertadas {}", filasInsertadas);
 	       
@@ -116,7 +129,7 @@ public class AdministradorAgrupadoresDao {
    public void inicializaBD()
    {
       Resource recurso = resourceLoader.getResource("classpath:inicializa.sql");
-      LOG.debug("El archivo existe : {}", recurso.exists());
+      LOG.debug("El archivo de inicialización inicializa.sql existe : {}", recurso.exists());
       try{
 	String ejecucion = IOUtils.toString(recurso.getURL(), Charset.defaultCharset()); 
 	template.execute( ejecucion);
@@ -128,10 +141,15 @@ public class AdministradorAgrupadoresDao {
       
    }
    
+   /**
+    * Ejecuta la instrucción que inicia la base de datos la base de datos
+    * @return 
+    */
    public boolean estaInicializadaLaBd()
    {
       try{
-	int total = template.queryForObject(" SELECT COUNT(*) FROM TATIPOFORMATEADOR", Integer.class); 
+	LOG.info("Revisando si la base de datos esta inicializada con el query {}", queryTotalFormateadores);
+	int total = template.queryForObject(queryTotalFormateadores, Integer.class); 
 	return total > 0;
       }catch( DataAccessException e)
       {
@@ -150,18 +168,9 @@ public class AdministradorAgrupadoresDao {
    public Set<AgrupadorBo> lee() throws IOException, ClassNotFoundException {
 
       Map<Integer, AgrupadorBo> agrupadores = new HashMap<>();
-      String SELECT = "  SELECT nom.FIID\n"
-	 + "       , nom.FCNOMBREAGRUPADOR\n"
-	 + "       , elem.FIID IDELEMENTO\n"
-	 + "       , elem.FCCONSTANTE\n"
-	 + "       , elem.FITIPOAGRUPADOR\n"
-	 + "       , elem.FCVALOR\n"
-	 + "    FROM TAELEMENTOTRADUCTOR elem\n"
-	 + "    JOIN TAAGRUPADOR nom\n"
-	 + "      ON nom.FIID = elem.FIIDTRADUCTOR\n"
-	 + "ORDER BY nom.FCNOMBREAGRUPADOR\n"
-	 + "       , elem.FCCONSTANTE";
-      template.query(SELECT, new ColumnMapRowMapper()).forEach((mapa) -> {
+      
+      LOG.info("Ejecutando select de datos iniciales {}", selectDatosIniciales);
+      template.query( selectDatosIniciales, new ColumnMapRowMapper()).forEach((mapa) -> {
 	 
 	 Integer idAgrupador = ((Long) mapa.get("FIID")).intValue();
 	 AgrupadorBo agrupador = agrupadores.get( idAgrupador);

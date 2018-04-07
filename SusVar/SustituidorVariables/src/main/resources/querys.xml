@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <comment>Archivo con todos los querys de la aplicación</comment>
+    <entry key="totalFormateadores">SELECT COUNT(*) FROM TATIPOFORMATEADOR</entry>
+    <entry key="TAAGRUPADOR.insert">INSERT INTO TAAGRUPADOR ( FCNOMBREAGRUPADOR ) VALUES ( ? )</entry>
+    <entry key="TAAGRUPADOR.update">UPDATE TAAGRUPADOR SET FCNOMBREAGRUPADOR = ? WHERE FIID = ?</entry>
+    <entry key="TAELEMENTOTRADUCTOR.insert"> INSERT INTO TAELEMENTOTRADUCTOR 
+        (FIID, FIIDTRADUCTOR,FCCONSTANTE,FITIPOAGRUPADOR,FCVALOR) VALUES ( ?,?,?,?,?)</entry>
+    <entry key="TAELEMENTOTRADUCTOR.update">
+                  update TAELEMENTOTRADUCTOR  
+		     set FCCONSTANTE = ?
+		       , FITIPOAGRUPADOR = ?
+		       , FCVALOR = ?
+		   where FIID = ?
+    </entry>
+    <entry key="selectDatosIniciales">SELECT nom.FIID
+	        , nom.FCNOMBREAGRUPADOR
+	        , elem.FIID IDELEMENTO
+	        , elem.FCCONSTANTE
+	        , elem.FITIPOAGRUPADOR
+	        , elem.FCVALOR 
+	     FROM TAELEMENTOTRADUCTOR elem
+	     JOIN TAAGRUPADOR nom
+	       ON nom.FIID = elem.FIIDTRADUCTOR
+	 ORDER BY nom.FCNOMBREAGRUPADOR
+	        , elem.FCCONSTANTE</entry>
+</properties>

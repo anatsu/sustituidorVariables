@@ -10,12 +10,14 @@ import javax.swing.JFrame;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  *
  * @author alvaro
  */
 @SpringBootApplication
+@PropertySource( "classpath:querys.xml")
 public class Application {
     
     
