@@ -25,7 +25,7 @@ public class TestLecturaConstantes {
 	 final String[] ARREGLO = new String[]{"DECLARE",
 	    "",
 	    " salary_increase CONSTANT number(3):= 3;",
-	    "csgAlgo CONSTANT NUMBER(4):= 5; -- hola",
+	    "csgAlgo CONSTANT NUMBER(4):= '5'; -- hola",
 	    "",
 	    "BEGIN",
 	    "",
@@ -35,16 +35,22 @@ public class TestLecturaConstantes {
 	    "",
 	    "END;"
 	 };
-
+	 
 	 Assert.assertNull(getConstante(ARREGLO[0]));
 	 Assert.assertNull(getConstante(ARREGLO[1]));
 	 final ElementoTraductorBo constante = getConstante(ARREGLO[2]);
 	 Assert.assertNotNull(constante);
 	 Assert.assertEquals("salary_increase", constante.getConstante());
 	 Assert.assertEquals("3", constante.getValor());
-	 
-	 /*Assert.assertNull( getConstante(ARREGLO[3]));
-      Assert.assertNull( getConstante(ARREGLO[4]));
+	  
+
+	 final ElementoTraductorBo constante2 = getConstante(ARREGLO[3]);
+	 Assert.assertNotNull(constante2);
+	 Assert.assertEquals("csgAlgo", constante2.getConstante());
+	 LOG.debug("Se encontro el primer texto");
+	 Assert.assertEquals("5", constante2.getValor());
+
+	 /*Assert.assertNull( getConstante(ARREGLO[4]));
       Assert.assertNull( getConstante(ARREGLO[5]));
       Assert.assertNull( getConstante(ARREGLO[6]));
       Assert.assertNull( getConstante(ARREGLO[7]));
@@ -109,14 +115,15 @@ public class TestLecturaConstantes {
 
       if (encontrado) {
 	 LOG.debug("Se encontro la palabra reservada CONSTANT en el indice {}", indiceBase);
-	 String constante = buscaConstante( indiceBase, linea);
-	 String valor = buscaValor( indiceBase+BUSCADO.length(), linea);
-	 
+	 String constante = buscaConstante(indiceBase, linea);
+	 LOG.debug("Constante {}", constante);
+	 String valor = buscaValor(indiceBase + BUSCADO.length(), linea);
+	 LOG.debug("Valor {}", valor);
+
 	 ElementoTraductorBo elem = new ElementoTraductorBo(null);
 	 elem.setConstante(constante);
 	 elem.setValor(valor);
 	 return elem;
-	 
 
       }
 
@@ -125,52 +132,50 @@ public class TestLecturaConstantes {
 
    private String buscaConstante(int indiceBase, String linea) {
       StringBuilder resultado = new StringBuilder();
-      
+
       indiceBase--;
-      while( linea.charAt(indiceBase) == ' ')
-      {
+      while (linea.charAt(indiceBase) == ' ') {
 	 indiceBase--;
       }
-      
-      while( indiceBase > 0 && linea.charAt(indiceBase) != ' ')
-      {
-	 resultado.append( linea.charAt(indiceBase));
+
+      while (indiceBase >= 0 && linea.charAt(indiceBase) != ' ') {
+	 resultado.append(linea.charAt(indiceBase));
 	 indiceBase--;
       }
-      
-      return resultado.reverse().toString();      
-      
+
+      return resultado.reverse().toString();
+
    }
 
    private String buscaValor(int indice, String linea) {
-      
+
       String resultado = null;
-      while( linea.charAt(indice)!= '=')
-      {
+      while (linea.charAt(indice) != '=') {
 	 indice++;
       }
       indice++;
       LOG.debug("El indice esta en {}", indice);
-      while( linea.charAt(indice)== ' ')
-      {
-	 indice++;      
+      while (linea.charAt(indice) == ' ') {
+	 indice++;
       }
       LOG.debug("El indice esta ahora en {}", indice);
-      if( linea.charAt(indice) == '\'')
-      {
+      if (linea.charAt(indice) == '\'') {
 	 LOG.debug("Se encontro una cadena");
 	 indice++;
-	 resultado = linea.substring(indice, linea.indexOf( indice, '\''));
-      }
-      if( Character.isDigit(linea.charAt(indice)) || linea.charAt(indice)== '.' )
-      {
-	 LOG.debug("Se encontro un numero");
-	 resultado = "";
-	 
-	 while( linea.charAt(indice) != ' ' && linea.charAt(indice) != ';')
-	 {
-	    resultado+= linea.charAt(indice);
-	    indice++;
+	 int indiceFinal = linea.indexOf('\'', indice);
+	 LOG.debug("indice final {}", indiceFinal);
+	 resultado = linea.substring(indice, indiceFinal );
+	 LOG.debug("El valor es {}", resultado);
+      } else {
+
+	 if (Character.isDigit(linea.charAt(indice)) || linea.charAt(indice) == '.') {
+	    LOG.debug("Se encontro un numero");
+	    resultado = "";
+
+	    while (linea.charAt(indice) != ' ' && linea.charAt(indice) != ';') {
+	       resultado += linea.charAt(indice);
+	       indice++;
+	    }
 	 }
       }
       return resultado;

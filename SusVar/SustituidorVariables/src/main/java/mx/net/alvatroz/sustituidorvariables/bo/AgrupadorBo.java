@@ -5,12 +5,17 @@
  */
 package mx.net.alvatroz.sustituidorvariables.bo;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.Set;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorSinNombreException;
 import mx.net.alvatroz.sustituidorvariables.bo.formateador.FormateadorFacade;
+import org.h2.util.IOUtils;
+import org.h2.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +130,163 @@ public class AgrupadorBo implements Serializable {
       }
       return true;
    }
+   
+   /**
+    * Agrega elementos desde un archivo
+    * @param archivo Archivo pudiera no existir en cuyo caso se generaría una excepción
+    * @throws FileNotFoundException 
+    */
+   public void agregaElementosDeArchivo(File archivo) throws FileNotFoundException
+   {
+      
+      if( archivo.exists() )
+      {
+	 Scanner escaner = new Scanner(archivo);
+	 while( escaner.hasNext())
+	 {
+	    ElementoTraductorBo elemento = recuperaElementoTraductor(escaner.nextLine());
+	    if( elemento != null)
+	    {
+	       this.elementosTraductor.add(elemento);
+	    }
+	    
+	    
+	    
+	 }
+	 IOUtils.closeSilently(escaner);
+      }
+      
+      
+   }
+   
+   private ElementoTraductorBo recuperaElementoTraductor(String linea) {
+
+      if (linea == null || linea.isEmpty()) {
+	 // la linea esta vacia
+	 return null;
+      }
+
+      final String BUSCADO = " constant";
+      Integer tamanioMaxBuscado = linea.length() - BUSCADO.length() - 2;
+      //LOG.debug("El tamaño {}", tamanioMaxBuscado);
+
+      if (tamanioMaxBuscado <= 0) {
+	 // no podría tener la palabra constant por que la linea es muy pequeña
+	 return null;
+      }
+
+      int i = 0;
+      Integer indiceAnterior;
+      Integer indiceTexto;
+      int indiceBase = -1;
+      boolean encontrado = false;
+
+      do {
+	 indiceAnterior = i;
+	 indiceTexto = 0;
+
+	 //LOG.debug(" buscados i: {} indiceTexto: {} letraLinea: {} letraTexto: {}"
+	 //   , i, indiceTexto, Character.toLowerCase( linea.charAt(i)), BUSCADO.charAt(indiceTexto));
+	 while (i < tamanioMaxBuscado
+	    && indiceTexto < BUSCADO.length()
+	    && Character.toLowerCase(linea.charAt(i)) == BUSCADO.charAt(indiceTexto)) {
+	    if (indiceTexto == 0) {
+	       indiceBase = i;
+	    }
+
+	    i++;
+	    indiceTexto++;
+
+	 }
+	 //LOG.debug("indice text {}", indiceTexto);
+
+	 if (indiceTexto == BUSCADO.length()) {
+	    encontrado = true;
+	 }
+
+	 if (indiceAnterior == i) {
+	    i++;
+	 }
+      } while (!encontrado && i < tamanioMaxBuscado);
+
+      if (encontrado) {
+	 LOG.debug("Se encontro la palabra reservada CONSTANT en el indice {}", indiceBase);
+	 String constante = buscaConstante(indiceBase, linea);
+	 LOG.debug("Constante {}", constante);
+	 String valor = buscaValor(indiceBase + BUSCADO.length(), linea);
+	 LOG.debug("Valor {}", valor);
+
+	 ElementoTraductorBo elem = new ElementoTraductorBo();
+	 elem.setConstante(constante);
+	 elem.setValor(valor);
+	 
+	 if( StringUtils.isNumber(valor))
+	 {
+	    elem.setTipo(TipoFormateador.NUMERO);
+	 }
+	 else{
+	    elem.setTipo(TipoFormateador.CADENA);
+	 }
+	 
+	 return elem;
+
+      }
+
+      return null;
+   }
+
+   private String buscaConstante(int indiceBase, String linea) {
+      StringBuilder resultado = new StringBuilder();
+
+      indiceBase--;
+      while (linea.charAt(indiceBase) == ' ') {
+	 indiceBase--;
+      }
+
+      while (indiceBase >= 0 && linea.charAt(indiceBase) != ' ') {
+	 resultado.append(linea.charAt(indiceBase));
+	 indiceBase--;
+      }
+
+      return resultado.reverse().toString();
+
+   }
+
+   private String buscaValor(int indice, String linea) {
+
+      String resultado = null;
+      while (linea.charAt(indice) != '=') {
+	 indice++;
+      }
+      indice++;
+      ///LOG.debug("El indice esta en {}", indice);
+      while (linea.charAt(indice) == ' ') {
+	 indice++;
+      }
+      //LOG.debug("El indice esta ahora en {}", indice);
+      if (linea.charAt(indice) == '\'') {
+	 LOG.debug("Se encontro una cadena");
+	 indice++;
+	 int indiceFinal = linea.indexOf('\'', indice);
+	 LOG.debug("indice final {}", indiceFinal);
+	 resultado = linea.substring(indice, indiceFinal );
+	 LOG.debug("El valor es {}", resultado);
+      } else {
+
+	 if (Character.isDigit(linea.charAt(indice)) || linea.charAt(indice) == '.') {
+	    //LOG.debug("Se encontro un numero");
+	    resultado = "";
+
+	    while (linea.charAt(indice) != ' ' && linea.charAt(indice) != ';') {
+	       resultado += linea.charAt(indice);
+	       indice++;
+	    }
+	 }
+      }
+      return resultado;
+   }
+   
+   
 
    @Override
    public String toString() {
