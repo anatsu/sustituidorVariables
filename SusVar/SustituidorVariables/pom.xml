@@ -9,8 +9,7 @@
     <parent>
         <groupId>mx.net.alvatroz</groupId>
         <artifactId>SusVar</artifactId>
-        <version>0.1</version>
-        <relativePath/>
+        <version>0.1</version>       
     </parent>
     
     <dependencies>

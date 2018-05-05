@@ -13,7 +13,7 @@
     <modules>
 	<module>SustituidorVariables</module>
 	<module>SustituidorVariablesView</module>
-        <module>lectorConstantes</module>
+        
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
