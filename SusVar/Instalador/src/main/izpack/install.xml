@@ -1,0 +1,59 @@
+<izpack:installation version="5.0"
+                     xmlns:izpack="http://izpack.org/schema/installation"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://izpack.org/schema/installation http://izpack.org/schema/5.0/izpack-installation-5.0.xsd">
+ 
+    <info>
+        <appname>SustituidorVariables</appname>
+        <appversion>0.1</appversion>
+        <appsubpath>susVar</appsubpath>
+        <javaversion>1.8</javaversion>
+        <authors>
+            <author name="I. Alvaro Cisneros Zaragoza" email="xalvarocz@gmail.com" />
+        </authors>
+    </info>
+ 
+    <locale>
+        <langpack iso3="spa"/>
+    </locale>
+ 
+    <guiprefs width="800" height="600" resizable="no">
+        <!--
+        <splash>images/peas_load.gif</splash>
+        -->
+        <laf name="substance">
+            <os family="windows" />
+            <os family="unix" />
+            <param name="variant" value="mist-silver" />
+        </laf>
+        <laf name="substance">
+            <os family="mac" />
+            <param name="variant" value="mist-aqua" />
+        </laf>
+        <modifier key="useHeadingPanel" value="yes" />
+    </guiprefs>
+ 
+    <panels>
+        <panel classname="TargetPanel"/>
+        <panel classname="PacksPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="FinishPanel"/>
+    </panels>
+ 
+    <packs>
+        
+        <pack name="ejecutables" required="yes">
+            <description>El ejecutable y sus ficheros</description>
+            
+            <fileset dir="lib" targetdir="$INSTALL_PATH/lib" excludes="izpack-standalone-compiler-4.2.1.jar"/>
+            <singlefile src="run.sh" target="$INSTALL_PATH/run.sh" os="unix" />
+                
+            <executable targetfile="$INSTALL_PATH/run.sh" type="bin"  failure ="warn" keep="true" >
+                <os family="unix" />                
+            </executable>
+            
+        </pack>
+                
+    </packs>
+ 
+</izpack:installation>
