@@ -5,16 +5,12 @@
  */
 package mx.net.alvatroz.sustituidorvariables.bo;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.Set;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorSinNombreException;
 import mx.net.alvatroz.sustituidorvariables.bo.formateador.FormateadorFacade;
-import org.h2.util.IOUtils;
 import org.h2.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +26,7 @@ public class AgrupadorBo implements Serializable {
    private Integer fiid;
    private String nombreAgrupador;
    private Set<ElementoTraductorBo> elementosTraductor;
+   
 
    public AgrupadorBo(String nombre, Integer fiid) {
       if (nombre == null || nombre.trim().isEmpty()) {
@@ -131,33 +128,7 @@ public class AgrupadorBo implements Serializable {
       return true;
    }
    
-   /**
-    * Agrega elementos desde un archivo
-    * @param archivo Archivo pudiera no existir en cuyo caso se generaría una excepción
-    * @throws FileNotFoundException 
-    */
-   public void agregaElementosDeArchivo(File archivo) throws FileNotFoundException
-   {
-      
-      if( archivo.exists() )
-      {
-	 Scanner escaner = new Scanner(archivo);
-	 while( escaner.hasNext())
-	 {
-	    ElementoTraductorBo elemento = recuperaElementoTraductor(escaner.nextLine());
-	    if( elemento != null)
-	    {
-	       this.elementosTraductor.add(elemento);
-	    }
-	    
-	    
-	    
-	 }
-	 IOUtils.closeSilently(escaner);
-      }
-      
-      
-   }
+   
    
    private ElementoTraductorBo recuperaElementoTraductor(String linea) {
 

@@ -10,7 +10,10 @@ import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -23,6 +26,7 @@ import mx.net.alvatroz.sustituidorvariables.bo.AgrupadorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorYaExisteException;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.FormateadorInexistenteException;
+import mx.net.alvatroz.sustituidorvariables.lectorconstantes.service.LectorVariablesServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +45,9 @@ public class FrameView extends FrameContenedor {
    private AdministradorAgrupadoresBo administradorAgrupadoresBo;
 
    private JFileChooser jfc;
+   
+   @Autowired
+   private LectorVariablesServices lvs;
    
    @PostConstruct
    public void init() {
@@ -174,11 +181,29 @@ public class FrameView extends FrameContenedor {
 	 File archivo = jfc.getSelectedFile();
 	 if (archivo != null) {
 	    AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem() + "");
-	    try {
-	       agrupador.agregaElementosDeArchivo(archivo);
+	    try ( FileInputStream fis = new FileInputStream(archivo)){
+	       
+	       List<ElementoTraductorBo> elementos = lvs.leeArchivo( fis);
+	       LOG.debug("Elementos encontrados {}", elementos.size());
+	       long id =System.currentTimeMillis();
+	       for( ElementoTraductorBo e : elementos)
+	       {  
+		  ElementoTraductorBo elementoNuevo = agrupador.agregaElemento(id);
+		  elementoNuevo.setConstante(	e.getConstante());
+		  elementoNuevo.setTipo(	e.getTipo());
+		  elementoNuevo.setValor(	e.getValor());
+		  id++;
+	       }
+	       
+	       
+	       LOG.debug("Elementos agrupados totale {}", agrupador.getElementos().size());
+	       
 	       repintaTabla(agrupador);
 	    } catch (FileNotFoundException e) {
 	       LOG.error("El archivo no se encuntra ", e);
+	       JOptionPane.showMessageDialog(this, e.getMessage());
+	    } catch (IOException e){
+	       LOG.error("Error en la lectura del archivo ", e);
 	       JOptionPane.showMessageDialog(this, e.getMessage());
 	    }
 	 }

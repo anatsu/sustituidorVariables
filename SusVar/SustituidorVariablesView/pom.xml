@@ -24,6 +24,11 @@
             <artifactId>SustituidorVariables</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>mx.net.alvatroz</groupId>
+            <artifactId>lectorConstantes</artifactId>
+            <version>0.1</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea -->
         <dependency>
             <groupId>com.fifesoft</groupId>

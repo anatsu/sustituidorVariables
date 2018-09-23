@@ -52,7 +52,11 @@ public class FrameContenedor extends JFrame {
    protected final JMenuItem jItemAgregar = new JMenuItem(RESOURCE_BUNDLE.getString("jItem.agregar"));
    protected final JMenuItem jItemEliminar = new JMenuItem(RESOURCE_BUNDLE.getString("jItem.eliminar"));
    protected final JMenuItem jMenuItemCargarDesdeArchivo = new JMenuItem(RESOURCE_BUNDLE.getString("jMenuItem.cargarDesdeArchivo"));
+   
+   
    protected final JPopupMenu popupMenuTabla = new JPopupMenu("PopUpTabla");
+   
+   
 
    protected final static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("i18n", Locale.getDefault());
 

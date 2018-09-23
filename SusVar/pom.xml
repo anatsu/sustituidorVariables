@@ -12,6 +12,7 @@
     </properties>
     <modules>
 	<module>SustituidorVariables</module>
+        <module>lectorConstantes</module>
 	<module>SustituidorVariablesView</module>
         <module>Instalador</module>
     </modules>
