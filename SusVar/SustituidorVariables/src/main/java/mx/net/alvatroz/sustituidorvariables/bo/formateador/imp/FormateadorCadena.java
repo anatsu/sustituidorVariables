@@ -5,7 +5,7 @@
  */
 package mx.net.alvatroz.sustituidorvariables.bo.formateador.imp;
 
-import mx.net.alvatroz.sustituidorvariables.bo.TipoFormateador;
+import mx.net.alvatroz.sustituidorvariablescomundto.TipoFormateador;
 import mx.net.alvatroz.sustituidorvariables.bo.formateador.IFormateador;
 import org.springframework.stereotype.Service;
 

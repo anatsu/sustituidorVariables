@@ -7,7 +7,7 @@ package mx.net.alvatroz.sustituidorvariables.bo.formateador;
 
 import java.util.EnumMap;
 import java.util.Map;
-import mx.net.alvatroz.sustituidorvariables.bo.TipoFormateador;
+import mx.net.alvatroz.sustituidorvariablescomundto.TipoFormateador;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.FormateadorInexistenteException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

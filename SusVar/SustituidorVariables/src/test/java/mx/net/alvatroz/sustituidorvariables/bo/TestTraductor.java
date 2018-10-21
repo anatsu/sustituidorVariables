@@ -7,6 +7,7 @@ package mx.net.alvatroz.sustituidorvariables.bo;
 
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class TestTraductor {
 
     private final static Logger LOG = LoggerFactory.getLogger(TestTraductor.class);
     @Test
+    @Ignore
     public void testTraductor() {
         LOG.debug("traduciendo");
 

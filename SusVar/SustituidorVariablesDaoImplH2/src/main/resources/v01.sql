@@ -1,0 +1,9 @@
+
+alter table TAAGRUPADOR
+alter column FIID BIGINT DEFAULT NULL;
+        
+create table TAVERSIONES(
+   VERSION_ACTUAL NUMBER(4)
+);
+
+insert into TAVERSIONES(VERSION_ACTUAL) VALUES ( 1 );

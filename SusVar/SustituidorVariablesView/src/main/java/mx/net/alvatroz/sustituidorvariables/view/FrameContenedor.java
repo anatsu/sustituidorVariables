@@ -25,8 +25,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import mx.net.alvatroz.sustituidorvariables.bo.AgrupadorBo;
-import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
+import mx.net.alvatroz.sustituidorvariablescomundto.AgrupadorDto;
+import mx.net.alvatroz.sustituidorvariablescomundto.ElementoTraductorDto;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.slf4j.Logger;
@@ -148,13 +148,13 @@ public class FrameContenedor extends JFrame {
       repintaTabla();
    }
 
-   public void repintaTabla(List<ElementoTraductorBo> lista) {
+   public void repintaTabla(List<ElementoTraductorDto> lista) {
       tablaElementosTraductor.setModel(new ConstantesTableModel(lista));
       repintaTabla();
    }
 
-   public void repintaTabla(AgrupadorBo agrupadorBo) {
-      tablaElementosTraductor.setModel(new ConstantesTableModel(agrupadorBo.getElementos()));
+   public void repintaTabla(AgrupadorDto agrupadorBo) {
+      tablaElementosTraductor.setModel(new ConstantesTableModel(agrupadorBo.getElementosTraductor()));
       repintaTabla();
    }
 

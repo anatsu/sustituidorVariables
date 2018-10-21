@@ -10,10 +10,8 @@ import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -21,12 +19,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import mx.net.alvatroz.sustituidorvariables.bo.AdministradorAgrupadoresBo;
-import mx.net.alvatroz.sustituidorvariables.bo.AgrupadorBo;
-import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
+import mx.net.alvatroz.sustituidorvariables.bo.IAgrupadorService;
+import mx.net.alvatroz.sustituidorvariables.bo.TraductorService;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.AgrupadorYaExisteException;
 import mx.net.alvatroz.sustituidorvariables.bo.exception.FormateadorInexistenteException;
-import mx.net.alvatroz.sustituidorvariables.lectorconstantes.service.LectorVariablesServices;
+import mx.net.alvatroz.sustituidorvariables.dto.FormFrameDto;
+import mx.net.alvatroz.sustituidorvariablescomundto.AgrupadorSinElementosDto;
+import mx.net.alvatroz.sustituidorvariablescomundto.ElementoTraductorDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,22 +41,32 @@ public class FrameView extends FrameContenedor {
    private final static Logger LOG = LoggerFactory.getLogger(FrameView.class);
 
    @Autowired
-   private AdministradorAgrupadoresBo administradorAgrupadoresBo;
+   private IAgrupadorService agrupadorSevice;
+   
+   @Autowired
+   private TraductorService traductorService;
 
    private JFileChooser jfc;
    
-   @Autowired
-   private LectorVariablesServices lvs;
+   FormFrameDto form = new FormFrameDto();
+      
    
    @PostConstruct
    public void init() {
 
       super.inicializaPosiciones();
 
+      agrupadorSevice.iniciaAplicacion();
       addWindowListener(new WindowAdapter() {
 	 @Override
 	 public void windowClosing(WindowEvent e) {
-	    administradorAgrupadoresBo.persisteCambios();
+	    LOG.info("Guardando el agrupador actual antes de salir. El agrupador actual es: {}", form.getAgrupadorActual());
+	    if( form.getAgrupadorActual() != null)
+	    {
+	       agrupadorSevice.guardaAgrupador( form.getAgrupadorActual());
+	    }
+	    
+	    
 	 }
       });
 
@@ -66,8 +75,9 @@ public class FrameView extends FrameContenedor {
 	 LOG.debug("Elemento elegido {} ", comboAgrupadores.getSelectedItem());
 	 if (comboAgrupadores.getSelectedItem() != null) {
 	    try {
-	       AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem() + "");
-	       String textoTraducido = administradorAgrupadoresBo.traduce(agrupador, txtAreaTextoATraducir.getText());
+	       
+	       String textoATraducir = txtAreaTextoATraducir.getText();
+	       String textoTraducido = traductorService.traduce(textoATraducir, form.getAgrupadorActual());
 	       txtTextoTraducido.setText(textoTraducido);
 	    } catch (FormateadorInexistenteException e) {
 	       LOG.error("Ocurrio un error al pintar un elemento {}", e);
@@ -81,11 +91,11 @@ public class FrameView extends FrameContenedor {
 	 String agrupadorNuevo = JOptionPane.showInputDialog(RESOURCE_BUNDLE.getString("nombreAgrupador"));
 
 	 try {
-	    if (agrupadorNuevo != null && !agrupadorNuevo.isEmpty()) {
-	       administradorAgrupadoresBo.agregaAgrupador(agrupadorNuevo);
-	       comboAgrupadores.addItem(agrupadorNuevo);
-	    }
-
+	    LOG.debug("Agrupador nuevo {}", agrupadorNuevo);
+	    agrupadorSevice.agregaNuevoAgrupadorSinElementos(form.getAgrupadorSinElementos(), agrupadorNuevo);
+	    LOG.debug("La lista de los agrupadores es: {}", form.getAgrupadorSinElementos());
+	    comboAgrupadores.addItem(agrupadorNuevo);
+	    
 	 } catch (AgrupadorYaExisteException ex) {
 	    LOG.error("Ya existe el agrupador ", ex);
 	    JOptionPane.showMessageDialog(botonAgregarAgrupador, ex.getMessage());
@@ -94,18 +104,29 @@ public class FrameView extends FrameContenedor {
       });
 
       comboAgrupadores.addActionListener((ActionEvent) -> {
-	 LOG.debug("Elemento elegido {} ", comboAgrupadores.getSelectedItem());
-	 AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem() + "");
-	 LOG.debug("Agrupador recuperado {}", agrupador);
+	 LOG.debug("Guardando información del agrupador actual");
+	 if( form.getAgrupadorActual() != null){	    	 
+	    agrupadorSevice.guardaAgrupador( form.getAgrupadorActual());
+	 }
+	 LOG.debug("Cargando el nuevo agrupador {} ", comboAgrupadores.getSelectedItem());
+	 int indice = comboAgrupadores.getSelectedIndex();
+	 AgrupadorSinElementosDto agrupadorSinElementos = form.getAgrupadorSinElementos().get(indice);
+	 form.setAgrupadorActual(agrupadorSevice.cargaAgrupador(agrupadorSinElementos));
+
 	 tablaElementosTraductor.clearSelection();
-	 repintaTabla(agrupador);
-
+	 repintaTabla(form.getAgrupadorActual());
+	 
       });
 
-      administradorAgrupadoresBo.getNombresAgrupadores().stream().forEach((agrupador) -> {
-	 comboAgrupadores.addItem(agrupador);
-      });
-
+      
+      form.setAgrupadorSinElementos( agrupadorSevice.getListaAgrupadoresDadosDeAlta());
+      if( !form.getAgrupadorSinElementos().isEmpty())
+      {	 
+	 form.setAgrupadorActual( agrupadorSevice.cargaAgrupador(form.getAgrupadorSinElementos().get(0))); 
+      }
+      
+      form.getAgrupadorSinElementos().forEach( agrupadorSinElem -> comboAgrupadores.addItem(agrupadorSinElem.getFcnombreAgrupador()));
+            
       botonAgregarElemento.addActionListener(e -> {
 	 eventoAgregarElementoATabla();
       });
@@ -114,24 +135,24 @@ public class FrameView extends FrameContenedor {
       }
       );
       jItemEliminar.addActionListener(e -> {
-	 final AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem() + "");
+	 
 
-	 if (agrupador != null) {
+	 
 
 	    int filaElegida = tablaElementosTraductor.getSelectedRow();
 	    LOG.debug(" Elemento elegido {}", filaElegida);
 
 	    if (filaElegida != -1) {
-	       ElementoTraductorBo elemento = ((ConstantesTableModel) tablaElementosTraductor.getModel()).getElemento(filaElegida);
-	       LOG.debug("El elemento eliminado es {}", elemento);
-	       LOG.debug("Elementos en el modelo {}", agrupador.getElementos());
-	       boolean eliminado = agrupador.eliminaElemento(elemento);
-	       LOG.debug("Elemento eliminado {}", eliminado);
-
-	       repintaTabla(agrupador);
+	    	       	       	       
+	       LOG.debug("Se elimina la fila elegida");
+	       ElementoTraductorDto elemento = ((ConstantesTableModel) tablaElementosTraductor.getModel()).getElemento(filaElegida);
+	       
+	       form.getAgrupadorActual().getElementosTraductor().removeIf( elem-> elem.getId().equals( elemento.getId()));
+	       
+	       repintaTabla(form.getAgrupadorActual());
 	    }
 
-	 }
+	 
       });
 
       popupMenuTabla.addPopupMenuListener(new PopupMenuListener() {
@@ -180,25 +201,11 @@ public class FrameView extends FrameContenedor {
       if (JFileChooser.APPROVE_OPTION == eleccion) {
 	 File archivo = jfc.getSelectedFile();
 	 if (archivo != null) {
-	    AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem() + "");
-	    try ( FileInputStream fis = new FileInputStream(archivo)){
+	    try{
 	       
-	       List<ElementoTraductorBo> elementos = lvs.leeArchivo( fis);
-	       LOG.debug("Elementos encontrados {}", elementos.size());
-	       long id =System.currentTimeMillis();
-	       for( ElementoTraductorBo e : elementos)
-	       {  
-		  ElementoTraductorBo elementoNuevo = agrupador.agregaElemento(id);
-		  elementoNuevo.setConstante(	e.getConstante());
-		  elementoNuevo.setTipo(	e.getTipo());
-		  elementoNuevo.setValor(	e.getValor());
-		  id++;
-	       }
+	       agrupadorSevice.agregaAgrupadoresDesdeArchivo(form.getAgrupadorActual(), archivo);
 	       
-	       
-	       LOG.debug("Elementos agrupados totale {}", agrupador.getElementos().size());
-	       
-	       repintaTabla(agrupador);
+	       repintaTabla(form.getAgrupadorActual());
 	    } catch (FileNotFoundException e) {
 	       LOG.error("El archivo no se encuntra ", e);
 	       JOptionPane.showMessageDialog(this, e.getMessage());
@@ -214,11 +221,11 @@ public class FrameView extends FrameContenedor {
    private void eventoAgregarElementoATabla() {
       LOG.debug("Elemento elegido {} ", comboAgrupadores.getSelectedItem());
       if (comboAgrupadores.getSelectedItem() != null) {
-	 AgrupadorBo agrupador = administradorAgrupadoresBo.getAgrupador(comboAgrupadores.getSelectedItem() + "");
-	 agrupador.agregaElemento();
-	 LOG.debug("El tamaño de los elementos es {}", agrupador.getElementos().size());
-
-	 repintaTabla(agrupador);
+	 
+	 agrupadorSevice.agregaNuevoElementoTraductor(form.getAgrupadorActual());
+	 
+	 LOG.debug("El tamaño de los elementos es {}", form.getAgrupadorActual().getElementosTraductor().size());
+	 repintaTabla(form.getAgrupadorActual());
 
       }
    }

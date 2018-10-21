@@ -11,10 +11,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <modules>
-	<module>SustituidorVariables</module>
-        <module>lectorConstantes</module>
-	<module>SustituidorVariablesView</module>
+        <module>SustituidorVariables</module>
+        <module>SustituidorVariablesView</module>
         <module>Instalador</module>
+        <module>SustituidorVariablesComunDto</module>
+        <module>SustituidorVariablesDaoApi</module>
+        <module>SustituidorVariablesDaoImplH2</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,7 +24,15 @@
         <version>1.5.9.RELEASE</version>
     </parent>
     <dependencyManagement>
+        
         <dependencies>
+            <dependency>
+                
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>            
+                <version>1.16.18</version>        
+                
+            </dependency>
             <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>

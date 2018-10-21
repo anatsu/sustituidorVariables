@@ -14,20 +14,20 @@ import java.util.ResourceBundle;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import mx.net.alvatroz.sustituidorvariables.bo.ElementoTraductorBo;
-import mx.net.alvatroz.sustituidorvariables.bo.TipoFormateador;
+import mx.net.alvatroz.sustituidorvariablescomundto.ElementoTraductorDto;
+import mx.net.alvatroz.sustituidorvariablescomundto.TipoFormateador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Usado para pintar la tabla de elementos que se muestra en pantalla
  * @author alvaro
  */
 public class ConstantesTableModel
         extends DefaultTableModel implements Serializable {
 
     private final static Logger LOG = LoggerFactory.getLogger(ConstantesTableModel.class);
-    private List<ElementoTraductorBo> listaElementos;
+    private List<ElementoTraductorDto> listaElementos;
     
     private List<JTextField> txtConstantes;
     private List<JComboBox> combosTipo;
@@ -36,18 +36,18 @@ public class ConstantesTableModel
 
     private final static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("i18n", Locale.getDefault());
     
-    public ConstantesTableModel(List<ElementoTraductorBo> listaElementos) {
+    public ConstantesTableModel(List<ElementoTraductorDto> listaElementos) {
         super();
         setListaElementos(listaElementos);
 
     }
-    public ConstantesTableModel(Collection<ElementoTraductorBo> listaElementos) {
+    public ConstantesTableModel(Collection<ElementoTraductorDto> listaElementos) {
         super();
-        setListaElementos(new ArrayList<ElementoTraductorBo>(listaElementos));
+        setListaElementos(new ArrayList<>(listaElementos));
 
     }
 
-    private void setListaElementos(List<ElementoTraductorBo> listaElementos) {
+    private void setListaElementos(List<ElementoTraductorDto> listaElementos) {
         LOG.debug("Preparanado elementos {}", listaElementos);
 
         synchronized (sincronizador) {
@@ -57,7 +57,7 @@ public class ConstantesTableModel
             txtConstantes = new ArrayList<>(listaElementos.size());
             combosTipo = new ArrayList<>(listaElementos.size());
             txtValores = new ArrayList<>(listaElementos.size());
-            listaElementos.stream().forEach((ElementoTraductorBo elem) -> {
+            listaElementos.stream().forEach((ElementoTraductorDto elem) -> {
                 JTextField txtConst = new JTextField( elem.getConstante());
                 JTextField txtValor = new JTextField( elem.getValor());
                 JComboBox cmb = new JComboBox(new Object[]{
@@ -172,9 +172,9 @@ public class ConstantesTableModel
      * @return 
      */
     
-    public ElementoTraductorBo getElemento( int fila)
+    public ElementoTraductorDto getElemento( int fila)
     {
-        ElementoTraductorBo elemento = null;
+        ElementoTraductorDto elemento = null;
         
         if( fila < listaElementos.size())
         {

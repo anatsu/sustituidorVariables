@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>mx.net.alvatroz</groupId>
     <artifactId>SustituidorVariables</artifactId>
-    <version>1.0</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
     
     <parent>
@@ -29,10 +29,7 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>            
-        </dependency>
+        
         
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
@@ -40,8 +37,16 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-
-
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>                        
+        </dependency>
+        <dependency>
+            <groupId>mx.net.alvatroz</groupId>
+            <artifactId>SustituidorVariablesDaoApi</artifactId>
+            <version>0.1</version>            
+        </dependency>
     </dependencies>
     
     

@@ -5,13 +5,17 @@
  */
 package mx.net.alvatroz.sustituidorvariables.bo;
 
+import mx.net.alvatroz.sustituidorvariablescomundto.TipoFormateador;
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- *
+ * Esta clase hacia mucho.
+ * Se elimina en favor de un dto
+ * @Deprecated
  * @author alvaro
  */
+@Deprecated
 public class ElementoTraductorBo implements Serializable, Comparable<ElementoTraductorBo>{
     /**
      * Identificador. No funciona en entornos concurrentes

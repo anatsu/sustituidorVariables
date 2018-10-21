@@ -7,6 +7,7 @@ package mx.net.alvatroz.sustituidorvariables;
 
 import mx.net.alvatroz.sustituidorvariables.view.FrameView;
 import javax.swing.JFrame;
+import mx.net.alvatroz.sustituidorvariables.dao.h2.AgrupadorH2Dao;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -23,6 +24,7 @@ public class Application {
     
     public static void main( String[] args)
     {
+	 
         ConfigurableApplicationContext application =  new SpringApplicationBuilder(Application.class).headless(false).run(args);
          
         FrameView frameView = application.getBean( FrameView.class);

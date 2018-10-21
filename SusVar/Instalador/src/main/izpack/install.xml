@@ -46,6 +46,7 @@
             <description>El ejecutable y sus ficheros</description>
             
             <fileset dir="lib" targetdir="$INSTALL_PATH/lib" excludes="izpack-standalone-compiler-4.2.1.jar"/>
+            
             <singlefile src="run.sh" target="$INSTALL_PATH/run.sh" os="unix" />
                 
             <executable targetfile="$INSTALL_PATH/run.sh" type="bin"  failure ="warn" keep="true" >

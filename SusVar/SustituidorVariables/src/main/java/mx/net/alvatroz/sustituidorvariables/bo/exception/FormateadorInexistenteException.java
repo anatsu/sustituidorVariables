@@ -5,7 +5,7 @@
  */
 package mx.net.alvatroz.sustituidorvariables.bo.exception;
 
-import mx.net.alvatroz.sustituidorvariables.bo.TipoFormateador;
+import mx.net.alvatroz.sustituidorvariablescomundto.TipoFormateador;
 
 /**
  *
