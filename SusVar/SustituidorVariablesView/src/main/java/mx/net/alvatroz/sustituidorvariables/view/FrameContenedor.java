@@ -85,10 +85,11 @@ public class FrameContenedor extends JFrame {
    }
 
    public void inicializaPosiciones() {
+      tablaElementosTraductor.setAutoCreateRowSorter(true);
       getContentPane().setLayout(new BorderLayout());
       getContentPane().add(getPanelNorte(), BorderLayout.NORTH);
       getContentPane().add(getPanelCentral(), BorderLayout.CENTER);
-      //getContentPane().add(getPanelConfigurador(), BorderLayout.SOUTH);
+      
       final JMenuBar jMenuBar = new JMenuBar();
       final JMenu jMenuArchivo = new JMenu(RESOURCE_BUNDLE.getString("jMenu.archivo"));
       jMenuArchivo.add(jMenuItemCargarDesdeArchivo);

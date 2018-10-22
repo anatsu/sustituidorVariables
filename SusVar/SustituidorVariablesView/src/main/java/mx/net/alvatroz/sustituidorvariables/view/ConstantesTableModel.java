@@ -57,9 +57,22 @@ public class ConstantesTableModel
             txtConstantes = new ArrayList<>(listaElementos.size());
             combosTipo = new ArrayList<>(listaElementos.size());
             txtValores = new ArrayList<>(listaElementos.size());
+	    
             listaElementos.stream().forEach((ElementoTraductorDto elem) -> {
-                JTextField txtConst = new JTextField( elem.getConstante());
-                JTextField txtValor = new JTextField( elem.getValor());
+                JTextField txtConst = new JTextField( elem.getConstante()){
+		   // se sobreescribe toString para poder ordenar por esta columna
+		   @Override
+		   public String toString(){
+		      return elem.getConstante();
+		   }
+		};
+                JTextField txtValor = new JTextField( elem.getValor()){
+		   // se sobreescribe para ordenar por esta columna
+		   @Override
+		   public String toString(){
+		      return elem.getValor();
+		   }
+		};
                 JComboBox cmb = new JComboBox(new Object[]{
                      TipoFormateador.CADENA, TipoFormateador.NUMERO, TipoFormateador.FECHA, TipoFormateador.FECHAYHORA}
                 );
